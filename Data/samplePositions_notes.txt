@@ -1,0 +1,13 @@
+- "barcodePosition" describes the barcode that was given to the sample in question, which also correspond to a position in a 96 well plate. Note theres only 60 barcodes, so they range from A1-E12.
+
+
+- "prepPlatePosition" describes the position in the 96 well plate that the sample spent most of it's time throughout sample processing. The samples that didn't fit in a 96 well plate were held in eppendorf tubes.
+
+
+- "sonicatingPlateID" is weird- when you build libraries, you shear DNA so that you generate fragments of an approximate size. This method doesn't apply to the wave 1 samples that were sequenced. Waves 2 and 4 were sonicated exclusively with a method that involved pipetting samples in a special sonicating plate (it was a 96 well format), sonicating them, and then pipetting them back out of the plate. The bulk of wave 2 fell in "plate 1", while the bulk of wave 4 fell in "plate 2". The samples from wave 2/4 that didn't fit in a single 96 well plate were moved to "plate 3". In addition, there were wave 1 founders that I also sonicated in this plate with the intent of comparing shearing methods, but sequencing is expensive, and we decided against it in the end.
+
+
+- "sonicationPlatePosition" describes where in the 96 well sonication plate these samples fell.
+
+
+Mostly, individual samples stayed in the same position in a 96 well plate throughout the processing, because I was really afraid contaminating/mixing samples (heh.), but I thought I included everything here just in case.

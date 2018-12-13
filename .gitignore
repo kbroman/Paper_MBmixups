@@ -1,0 +1,12 @@
+copy_from_bitbucket.sh
+Analysis/ReadCounts/*.rds
+Analysis/SnpCalls/*.RData
+Analysis/Summaries/inR.tgz
+LaTeX/
+mb_mixups.pdf
+R/single_results.rds
+R/mixture_results.rds
+Figs/
+R/fig_cache/
+R/*.html
+GitHub/

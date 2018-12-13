@@ -1,0 +1,998 @@
+\documentclass[12pt,letterpaper]{article}
+
+%%%%% packages
+\usepackage{graphicx}
+\usepackage{color}
+\usepackage[top=1in, bottom=1in, left=1in, right=1in]{geometry}
+\usepackage{lscape,pdflscape}
+\usepackage{alltt,amsmath,caption,epsfig,enumerate,enumitem,float,
+  hyperref,indentfirst,pdfpages,relsize,sectsty,setspace,subcaption,times}
+\hypersetup{colorlinks, allcolors={black}}  % default link color
+\hypersetup{pdfpagemode=UseNone} % don't show bookmarks on initial view
+\setlength{\rightskip}{0pt plus 1fil} % makes ragged right
+\usepackage[authoryear]{natbib}
+\bibpunct{(}{)}{;}{a}{}{,}
+\usepackage[labelsep=space]{caption}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage[table]{xcolor}
+%%%%%%%%%%%%%%
+
+\allsectionsfont{\normalfont\sffamily\bfseries}
+\newcommand{\LOD}{\text{LOD}}
+\renewcommand{\figurename}{\textbf{Figure}}
+\renewcommand{\thefigure}{\textbf{\arabic{figure}}}
+\renewcommand{\tablename}{\textbf{Table}}
+\renewcommand{\thetable}{\textbf{\arabic{table}}}
+
+<<setup, include=FALSE>>=
+knitr::opts_chunk$set(echo=FALSE, results="hide",
+                      warning=FALSE, message=FALSE)
+library(data.table)
+library(broman)
+library(kableExtra)
+library(magrittr)
+library(lineup2)
+options(knitr.table.format="latex")
+@
+
+\begin{document}
+
+\setstretch{2.0}
+
+\vspace*{8mm}
+\begin{center}
+
+\textbf{\Large Identification of sample mix-ups and mixtures \\
+in microbiome data in Diversity Outbred mice}
+
+\bigskip \bigskip \bigskip \bigskip
+
+{\large Alexandra K. Lobo$^{*}$, Lindsay L. Traeger$^{\dagger}$, Mark P.
+  Keller$^{\ddagger}$, Alan D. Attie$^{\ddagger}$, \\
+  Federico E. Rey$^{\dagger}$, Karl W. Broman$^{*,1}$}
+
+\bigskip \bigskip
+
+Departments of $^{*}$Biostatistics and Medical Informatics,
+$^{\dagger}$Bacteriology, and $^{\ddagger}$Biochemistry,
+University of Wisconsin--Madison, Madison, Wisconsin 53706
+
+\end{center}
+
+%%% Add today's date
+\def\todayISO{\leavevmode\hbox{\the\year-\twodigits\month-\twodigits\day}}
+\def\twodigits#1{\ifnum#1<10 0\fi\the#1}
+
+\vspace{3in} \hfill {\footnotesize \todayISO}
+%%%%%%%%%%%%%%%%%
+
+\newpage
+
+\noindent \textbf{Running head:} Microbiome mix-ups and mixtures
+
+
+\bigskip \bigskip \bigskip
+
+\noindent \textbf{Key words:} data cleaning, quantitative trait loci,
+multi-parent populations, data diagnostics, sample mislabeling
+
+
+
+\bigskip \bigskip \bigskip
+
+\noindent \textbf{$^1$Corresponding author:}
+
+\begin{tabular}{lll}
+ \\
+ \hspace{1cm} & \multicolumn{2}{l}{Karl W Broman} \\
+ & \multicolumn{2}{l}{Department of Biostatistics and Medical Informatics} \\
+ & \multicolumn{2}{l}{University of Wisconsin--Madison} \\
+ & \multicolumn{2}{l}{2126 Genetics-Biotechnology Center} \\
+ & \multicolumn{2}{l}{425 Henry Mall} \\
+ & \multicolumn{2}{l}{Madison, WI 53706} \\
+ \\
+ & Phone: & 608--262--4633 \\
+ & Email: & \verb|broman@wisc.edu|
+\end{tabular}
+
+
+\newpage
+
+\section*{Abstract}
+
+In a Diversity Outbred mouse project with genotype data on 500
+animals, including 297 with microbiome data, we identified three sets
+of sample mix-ups (two pairs and one trio) as well as at least 15
+microbiome samples that appear to be mixtures of pairs of mice. The
+microbiome data consisted of shotgun sequencing reads from DNA
+extracted from mouse feces, in order to characterize the population of
+bacterial species in the mouse gut. These sequence reads included
+sufficient reads derived from the host mouse to identify the
+individual. A number of microbiome samples appeared to contain a
+mixture of DNA from two mice. We describe a method for identifying
+sample mix-ups in such microbiome data, as well as a method for
+evaluating sample mixtures in this context.
+
+
+
+
+
+
+\newpage
+
+\section*{Introduction}
+
+Sample mix-ups and other sample mislabelings interfere with our
+ability to map the genetic loci affecting complex phenotypes, as the
+mis-alignment of genotype and phenotype will weaken associations,
+reduce power, and give biased estimates of locus effects.
+
+In traditional genetic studies, one has limited ability to detect
+sample mix-ups. Inconsistencies between subjects' sex and X chromosome
+genotypes may reveal some problems, but one is blind to most errors.
+However, in studies that include genome-wide gene expression data,
+there is an opportunity to not just identify but also correct sample
+mix-ups \citep{westra2011, lynch2012, broman2015}, as strong local
+expression quantitative trait loci (eQTL) can be used to identify
+individuals.
+
+Studies to identify host loci that affect microbiome population
+composition could similarly be affected by sample mix-ups. And if the
+microbiome analysis focuses on a single locus (such as 16S ribosomal
+RNA), one would have little ability to detect mix-ups. But when
+applying shotgun sequencing to microbiome samples, to obtain
+metagenomic data, there may be sufficient sequence reads from the mouse host to
+identify the individual.
+
+In a Diversity Outbred (DO) mouse project with genotype data on 500
+animals \citep{keller2018}, including 297 with metagenomic sequencing
+data from their fecal microbiome, we identified three sets of sample mix-ups
+(two pairs and one trio) as well as at least 15 microbiome samples that appeared
+to be mixtures of pairs of mice. DO mice \citep{churchill2012, svenson2012}
+are an advanced intercross population derived from eight founder
+strains \citep[the same founders as the Collaborative Cross;][]{churchill2004}.
+
+The microbiome data consisted of shotgun sequencing reads from
+DNA extracted from mouse feces, in order to characterize the
+population of bacterial species in the mouse gut. These sequence reads
+included sufficient reads derived from the host mouse to identify the
+individual. A number of microbiome samples appeared to contain a
+mixture of DNA from two mice. We describe a method for identifying
+sample mix-ups in such microbiome data, as well as a method for
+evaluating sample mixtures in this context.
+
+
+\clearpage
+\section*{Material and Methods}
+
+This study was part of a larger study \citep[see][]{keller2018} that involved 500 Diversity
+Outbred (DO) mice that were obtained in five batches of 100 mice each,
+from generations 17, 18, 19, 21, and 23.   The mice were obtained from
+the Jackson Laboratories (stock no.\ 009376) at 4 weeks of age,
+were maintained on a high fat/high sucrose Western-style diet, and
+were singly housed.
+
+
+\subsection*{Microbiome data}
+
+DNA was extracted from the feces of three of the five batches of DO
+mice (1, 2, and 4). DNA was isolated as described in \citet{turnbaugh2009} and
+\citet{kreznar2017}. Libraries were prepared for Illumina sequencing
+according to the methods laid out in \citet{mcnulty2011} with the
+following alteration: in the gel purification stage, DNA fragments
+were isolated at $\sim$450 bp instead of 200 bp. Paired-end sequencing
+(2$\times$125) was performed using both MiSeq and Illumina HiSeq 2500
+technologies, to allow for testing libraries before Hiseq
+runs, and to obtain additional sequences from under-sequenced samples.
+Raw reads were demultiplexed using the Fastx Toolkit
+\citep[version 0.0.13;][]{fastx},
+\verb|fastx_barcode_splitter.pl| with \verb|partial 2| and \verb|mismatch 2|.
+Demultiplexed reads from the same samples that occurred on multiple
+lanes or sequencing platforms were concatenated into one forward and
+one reverse read file. Reads were then trimmed to remove barcodes
+(\verb|fastx_trimmer -f 9 -Q 33|) and for read quality
+(\verb|fastq_quality_trimmer -t 20 -l 30 -Q33|). Trimmed reads files
+were re-paired (with unpaired reads removed) using custom perl
+scripts. Reads were mapped to the mouse genome using bowtie2
+\citep[version 2.2.7;][]{bowtie2} with default settings. Host-derived reads were
+identified using samtools \citep[version 1.3;][]{samtools}. Three
+metagenomic samples did not yield DNA and were excluded from further
+analysis (DO-148, DO-182, and DO-202).
+
+\subsection*{SNP genotypes}
+
+Mouse genotyping was performed on tail biopsies as described in
+\citet{svenson2012}, using the third-generation Mouse Universal
+Genotyping Array \citep[GigaMUGA;][]{gigamuga} at Neogen (Lincoln,
+NE). The GigaMUGA array includes 143,259 SNPs. We focused on 110,143
+autosomal SNPs that were placed in quality tiers 1 or 2 (out of 4) in
+\citet{gigamuga}.
+
+We used a hidden Markov model (HMM) to calculate 36-state diplotype
+probabilities, given the multipoint SNP genotype data, along each
+chromosome. (We use the term diplotype to refer to a pair of founder
+haplotypes). We then used a database of genotypes of the eight founder
+strains at 33 million SNP variants (based on a resequencing project at
+Sanger) to get inferred SNP genotypes for all 500 DO mice at all SNPs.
+To save computation time, we assumed constant diplotype probabilities
+within the intervals between SNPs on the GigaMUGA array and took the
+average of the probabilities for the two endpoints as the
+probabilities within the interval. We used the founder strains'
+SNP genotypes to collapse the 36-state diplotype probabilities to
+3-state SNP genotypes. The inferred SNP genotype was that with maximum
+marginal probability, provided it was $>$ 0.95. Calculations were
+performed in R \citep{RCore} using R/qtl2
+(\url{https://kbroman.org/qtl2}).
+
+\subsection*{Sample mix-ups}
+
+For each microbiome sample, we counted the number of reads with each
+allele at the locations of the 33 millions SNPs among the eight founder
+strains. We omitted SNPs that had more than two alleles among the
+eight founders. We compared each microbiome sample to each of the 500
+genotyped samples and calculated a measure of distance
+by taking, among reads that overlapped a SNP where the genotyped
+sample was homozygous, the proportion with an allele that was
+discordant with the inferred SNP genotype.
+
+\subsection*{Sample mixtures}
+
+A number of the microbiome samples appeared to be mixtures of DNA from
+two mice. For each microbiome sample, we studied the possibility that
+it was a mixture between the correctly labeled sample and a single
+contaminant, and considered each of the other 499 genomic DNA samples as the
+possible contaminant. For a given microbiome sample and a pair of
+genomic DNA samples, we counted the number of reads that overlapped a
+SNP, split according to the SNP allele on the read and the joint
+SNP genotypes for the pair of samples.
+
+We assumed that the microbiome sample contained a proportion $p$ of
+the contaminant, and assumed a sequencing error rate of $\epsilon$,
+and calculated the expected proportion of reads with an A vs B allele
+as a function of the genotypes of the two mice that contributed to the
+mixture (Supplementary Table S1). With this multinomial model, we then
+derived maximum likelihood estimates (MLEs) for $p$ and $\epsilon$ by
+numerical optimization, and we calculated the likelihood ratio test
+(LRT) statistic for the null hypothesis that there is no contamination
+($p=0$), as twice the natural log of the ratio of the likelihood,
+plugging in the MLEs of $p$ and $\epsilon$, to the likelihood
+evaluated at $p=0$ with $\epsilon$ estimated under that constraint.
+
+The LRT values throughout are extremely large, and so to identify
+potential mixtures, we considered a plot of the LRT versus the estimated mixture
+proportion, with a sample
+considered as a mixture with each of the other possible sample as the
+contaminant, and looked for a separation between one possible
+contaminant and the others.
+
+Calculations were performed in R \citep{RCore}, with the R package
+R/mbmixture (\url{https://github.com/kbroman/mbmixture}).
+
+
+
+\subsection*{Data and software availability}
+
+Raw microbiome sequence reads are available at
+\textbf{\emph{(some general sequence archive?)}}.
+The GigaMUGA SNP genotypes are available at \textbf{\emph{(figshare?)}}.
+Founder SNP genotypes are available as a
+SQLite database at figshare,
+\href{https://doi.org/10.6084/m9.figshare.5280229.v2}{doi:10.6084/m9.figshare.5280229.v2}.
+
+Analysis scripts and processed data will be made available at GitHub.
+
+An R package, R/mbmixture, for performing the mixture analysis is
+available at Github: \url{https://github.com/kbroman/mbmixture}.
+
+
+
+
+\clearpage
+\section*{Results}
+
+<<load_read_stats>>=
+num_reads <- data.table::fread("Data/readMapping_mouseGenome_all_uncorrectedNames.tsv", data.table=FALSE)
+tot_reads <- num_reads$TotalReads_PEasSE
+mouse_reads <- num_reads$readsMapped_mouseGenome
+percent_mouse_reads <- mouse_reads/tot_reads * 100
+@
+
+Of the 300 DO mice considered for the microbiome portion of this project,
+297 gave usable data, with a median of
+\Sexpr{round(median(tot_reads/10^6))} million reads, counting
+paired-end reads individually. (The vast
+majority had more than 10 million reads.) There was considerable
+variation in the proportion of reads that were derived from the mouse
+host. The median was \Sexpr{myround(median(percent_mouse_reads),1)}\%,
+but \Sexpr{sum(percent_mouse_reads < 1)} mice had $<$ 1\% and
+\Sexpr{sum(percent_mouse_reads > 25)} mice had $>$ 25\%. There was a
+strong batch effect, with the second batch of microbiome samples having much lower
+proportions of reads coming from the mouse host than the other two
+batches.
+
+We used high-density SNP genotypes, from the GigaMUGA array, to infer
+the 36-state diplotypes in each of the DO mice, using a hidden Markov
+model to calculate the diplotype probabilities conditional on the
+multipoint SNP data. (See Supplementary Figure S1 for a genome
+reconstruction of one DO mouse, along with the detailed diplotype
+probabilities along one chromosome.) We then used a database of the
+eight founder strains' genotypes at 33 million SNPs to infer the
+corresponding SNP genotypes in the DO mice.
+
+\subsection*{Sample mix-ups}
+
+In order to identify possible sample mix-ups, we compared each
+microbiome sample to each genomic DNA sample, by finding sequence
+reads that overlapped a SNP and counting the number of sequence reads
+in the six categories defined by the SNP genotype in the genomic DNA
+sample and the SNP allele on the sequence read. We coded the SNP
+alleles based on their frequency in the founder strains (A for the
+major allele and B for the minor allele). At SNPs where a mouse is AA,
+the microbiome reads should be mostly A, and at SNPs where a mouse is
+BB, the microbiome reads should be mostly B. We used the proportion
+of discordant microbiome reads, among those overlapping a SNP where
+the genomic DNA sample was homozygous, as a measure of distance
+between the microbiome sample and the genomic DNA sample.
+
+<<load_single_sample_results>>=
+sing <- readRDS("Data/sample_results_allchr.rds")
+nAA_360 <- sum(sing[["DO-360"]]["DO-360","AA",])
+pB_AA_360 <- sing[["DO-360"]]["DO-360","AA","B"]/sum(sing[["DO-360"]]["DO-360","AA",])
+nBB_360 <- sum(sing[["DO-360"]]["DO-360","BB",])
+pA_BB_360 <- sing[["DO-360"]]["DO-360","BB","A"]/sum(sing[["DO-360"]]["DO-360","BB",])
+d_360 <- (sing[["DO-360"]]["DO-360","AA","B"] + sing[["DO-360"]]["DO-360","BB","A"]) /
+    (sum(sing[["DO-360"]]["DO-360","AA",]) + sum(sing[["DO-360"]]["DO-360","BB",]))
+pB_AA_370 <- sing[["DO-360"]]["DO-370","AA","B"]/sum(sing[["DO-360"]]["DO-370","AA",])
+pA_BB_370 <- sing[["DO-360"]]["DO-370","BB","A"]/sum(sing[["DO-360"]]["DO-370","BB",])
+d_370 <- (sing[["DO-360"]]["DO-370","AA","B"] + sing[["DO-360"]]["DO-370","BB","A"]) /
+    (sum(sing[["DO-360"]]["DO-370","AA",]) + sum(sing[["DO-360"]]["DO-370","BB",]))
+
+d <- t(sapply(sing, apply, 1, function(a) (a["AA","B"]+a["BB","A"])/sum(a["AA",] + a["BB",])))
+best <- get_best(d)
+self <- get_self(d)
+@
+
+For example, Supplementary Table S2 contains counts of sequence reads
+from the microbiome sample for mouse DO-360, classified by the SNP
+genotype of DO-360 and by the allele present in the read. Among the
+\Sexpr{myround(nAA_360/1e6, 1)} million reads that overlapped a SNP
+where DO-360 had genotype AA, \Sexpr{myround(pB_AA_360*100, 1)}\% had a
+B allele, and among the \Sexpr{myround(nBB_360/1e6, 1)} million
+reads that overlapped a SNP where DO-360 had genotype BB,
+\Sexpr{myround(pA_BB_360*100, 1)}\% had an A allele. The distance
+between microbiome sample DO-360 and genomic DNA sample DO-360 was
+thus \Sexpr{myround(d_360, 2)}.
+
+If we compare microbiome sample DO-360 to genomic DNA sample DO-370
+(Supplementary Table S3), however, we find that only \Sexpr{myround(pB_AA_370*100,1)}\%
+of reads overlapping an AA SNP had a B, and only \Sexpr{myround(pA_BB_370*100,1)}\%
+of reads overlapping a BB SNP had an A, for an overall distance of
+\Sexpr{myround(d_370, 3)}. Similarly, microbiome sample DO-370 is most
+like genomic DNA sample DO-360. Thus, for samples DO-360 and DO-370,
+either the genomic DNA samples got swapped or the microbiome samples
+got swapped. A comparison of RNA-Seq data for these samples
+\citep{keller2018} to the SNP genotypes also indicated a sample swap,
+and so we can infer that the mix-up was in the genomic DNA samples.
+
+We calculated distances between each of the 297 microbiome samples and
+each of the 500 genomic DNA samples. Figure~1 contains a scatterplot
+where each point represents one of the microbiome samples, with the
+x-axis being the distance to the corresponding genomic DNA sample
+(distance to self), and the y-axis being the minimum distance.
+
+\begin{figure} \begin{center}
+\includegraphics[width=\textwidth]{Figs/fig1.pdf}
+\caption{Plot of minimum distance vs distance to self. Each point is a
+  microbiome sample and distances to genomic DNA samples are measured
+  by taking, among reads that overlapped a SNP where the genotyped
+  sample was homozygous, the proportion with an allele that was
+  discordant with the inferred SNP genotype. The microbiome samples
+  are categorized according to our conclusions about their
+  status.}
+\end{center} \end{figure}
+
+For microbiome samples along the diagonal, the corresponding genomic
+DNA sample was the closest, and where this distance is small
+(lower-left corner), we can conclude that the microbiome sample is
+correctly labeled. (However, as we will see below, a couple of these
+look to be mixtures, contaminated by a small amount of another
+sample.)
+
+
+There are
+\Sexpr{numbers[sum(!is.na(self) & self > 0.15 & best < 0.01)]}
+microbiome samples (colored purple in Figure~1) where the distance to
+the corresponding genomic DNA sample was $>$ 0.15 but the minimum
+distance to a microbiome sample was $<$ 0.01. These are clear sample
+mix-ups, and form two pairs and one trio: DO-360/DO-370 (mentioned
+above), DO-53/DO-54, and DO-83/DO-85/DO-88.
+
+Figure~2 provides further detail on a selected set of microbiome
+samples, with their distance to each of the 500 genomic DNA samples.
+As seen in Figures~2A and 2B, samples DO-53 and DO-54 are a clear
+mix-up (either in the genomic DNA samples or in the microbiome
+samples) as each microbiome sample is closest to the oppositely
+labeled genomic DNA sample. DO-101 (Figure~2C) is an example of a
+correctly labeled sample.
+
+Additional cases are shown in Supplemental Figure~S2. The top row
+includes the three-way mix-up: microbiome sample DO-83 is closest to
+genomic DNA sample DO-88, microbiome sample DO-88 is closest to genomic
+DNA sample DO-85, and microbiome sample DO-85 is closest to genomic DNA
+sample DO-83.
+
+\begin{figure} \begin{center}
+\includegraphics[width=\textwidth]{Figs/fig2.pdf}
+\caption{For selected microbiome samples, plots of their distance to
+  each genomic sample, with distance measured by taking, among reads
+  that overlapped a SNP where the genotyped sample was homozygous, the
+  proportion with an allele that was discordant with the inferred SNP
+  genotype. The sample with what should be the correct label is
+  highlighted in dark pink. A set of low-quality DNA samples are
+  highlighted in pale pink.}
+\end{center} \end{figure}
+
+Returning to Figure~1, there are a number of microbiome samples that
+are not particularly close to the corresponding genomic DNA sample,
+nor to any sample. For DO-357 and DO-397, the genomic DNA samples were
+of low quality. For DO-174 and DO-385, the microbiome data included
+only a small number of reads. But another 15 microbiome samples appear
+to be mixtures of two samples.
+
+Consider, for example, microbiome sample DO-358. It is closest to the
+corresponding genomic DNA sample, but at a relatively large distance
+(\Sexpr{myround(self["DO-358"], 2)}), and as seen in Figure~2D, it is
+relatively close to DO-344 (distance
+\Sexpr{myround(d["DO-358", "DO-344"], 2)}).
+
+Microbiome sample DO-362 is closer to genomic DNA sample DO-361 than
+to its own genomic DNA sample, but as seen in Figure~2E, its own
+sample is second-closest. A similar pattern is seen for microbiome
+sample DO-329, which is closest to genomic DNA sample DO-328, but its
+own genomic DNA sample is second-closest. Additional examples are
+shown in Supplementary Figure~S2.
+
+
+
+\subsection*{Sample mixtures}
+
+<<load_pairs>>=
+pair <- readRDS("Data/pair_results_allchr.rds")
+pair358_344 <- pair[["DO-358"]]["DO-344",,,]
+@
+
+To investigate the possibility that a microbiome sample is a mixture
+of two samples, we break down the counts of sequence reads by the SNP
+genotype at two genomic DNA samples. For example, Supplementary
+Table~S4 contains sequence read counts for microbiome sample DO-358,
+split according to the SNP genotypes at genomic DNA samples DO-358 and
+DO-344. If the microbiome sample DO-358 contains only DNA from DO-358,
+then the proportion of reads with the B allele shouldn't depend on the
+genotype at DO-344, but in reads overlapping SNPs where both DO-358 and
+DO-344 are AA,
+\Sexpr{myround(pair358_344["AA","AA","B"]/sum(pair358_344["AA","AA",])*100,1)}\%
+have a B, while in reads overlapping SNPs where DO-358 is AA but
+DO-344 is BB,
+\Sexpr{myround(pair358_344["AA","BB","B"]/sum(pair358_344["AA","BB",])*100,1)}\%
+have a B. This is strong evidence for the microbiome sample DO-358
+being a mixture of DO-358 and DO-344, and
+\Sexpr{myround(pair358_344["AA","BB","B"]/sum(pair358_344["AA","BB",])*100,1)}\%
+is a rough estimate of the proportion of the sample that came from DO-344.
+(Further, we can estimate the sequencing error rate as
+\Sexpr{myround(pair358_344["AA","AA","B"]/sum(pair358_344["AA","AA",])*100,1)}\%.)
+
+In contrast, in Table~S5 consider reads for microbiome sample DO-101,
+split according to the SNP genotypes at genomic DNA samples DO-101 and
+DO-102. Here, we see that the frequency of A reads does not depend on
+the genotype at DO-102; the DO-101 microbiome sample does not appear
+to be contaminated by DO-102.
+
+More formally, we fit a multinomial model to the read counts for a
+microbiome sample, assumed to be a mixture of the corresponding
+genomic DNA sample plus one other, and derive derive maximum
+likelihood estimates (MLEs) of the contaminant probability $p$ (the
+proportion of the microbiome sample that came from the second genomic
+DNA sample) and the sequencing error rate $\epsilon$. We further
+calculate a likelihood ratio test (LRT) statistic for a test of $p=0$ (that
+is, the microbiome sample having no contamination).
+
+<<load_mixture_results>>=
+mix <- readRDS("R/mixture_results.rds")
+mix358_344 <- mix[["DO-358"]]["DO-344",]
+p <- sapply(mix, function(a) a[which.max(a[,"lrt_p0"]), "p"])
+lrt <- sapply(mix, function(a) a[which.max(a[,"lrt_p0"]), "lrt_p0"])
+mixups <- paste0("DO-", c(53,54,83,85,88,360,370))
+bad <- paste0("DO-", c(357,397))
+clear_mix <- names(which(lrt > 5e5 & !(names(lrt) %in% c(bad, mixups))))
+subtle_mix <- names(which(lrt < 5e5 & lrt > 7e4 & !(names(lrt) %in% c(bad, mixups))))
+@
+
+For microbiome sample DO-358, considered as a mixture of DO-358 and
+DO-344, we estimate the contaminant probability as
+\Sexpr{myround(mix358_344["p"]*100, 1)}\% and the sequencing error rate as
+\Sexpr{myround(mix358_344["e"]*100, 1)}\%. The LRT statistic (for
+testing $p=0$) is \Sexpr{myround(mix358_344["lrt_p0"]/1e6, 1)} $\times 10^6$.
+
+Figure 3 displays the results for each microbiome sample, considered
+as a mixture of the correct sample plus each possible other genomic
+DNA sample, one at a time, as a contaminant. On the y-axis is the LRT
+statistic for the contaminant sample that gave the largest such
+statistics, and on the x-axis is the corresponding estimate of the
+contaminant probability.
+
+\begin{figure} \begin{center}
+\includegraphics[width=\textwidth]{Figs/fig3.pdf}
+\caption{Plot of maximum achieved likelihood ratio test statistic (for
+  the test of no mixture) versus the estimated proportion from a
+  contaminant, for each microbiome sample. The samples are categorized
+  as in Figure 1, by our conclusions about their status.}
+\end{center} \end{figure}
+
+The seven sample mix-ups, mentioned previously, are on the far right
+of Figure~3, with estimated contaminant probability near 1, and with large
+values for the LRT statistic. There are
+\Sexpr{length(c(clear_mix, subtle_mix))} apparent mixtures,
+shown in green. Of these, \Sexpr{length(clear_mix)} are quite clear,
+with estimated contaminant probabilities between
+\Sexpr{round(min(p[clear_mix])*100)}\% and
+\Sexpr{round(max(p[clear_mix])*100)}\%, and with LRT statistics
+$>$ \Sexpr{floor(min(lrt[clear_mix]/1e5))} $\times 10^5$.
+There are \Sexpr{numbers[length(subtle_mix)]} others
+(\Sexpr{vec2string(subtle_mix)})
+that are more subtle, with estimated contaminant probabilities of
+\Sexpr{round(min(p[subtle_mix])*100)}--\Sexpr{round(max(p[subtle_mix])*100)}\%,
+and with LRT statistics of
+\Sexpr{round(min(lrt[subtle_mix])/1e4)}--\Sexpr{round(max(lrt[subtle_mix])/1e4)}
+$\times 10^4$.
+
+Figure~4 provides more detailed results for a selected set of samples.
+Each panel is a scatterplot of the LRT statistic versus the estimated
+contaminant probability, for a single microbiome sample considered as
+a mixture of itself and one other genomic DNA sample, and with the
+points corresponding to the 500 possible genomic DNA samples. In each
+case, a single possible contaminant stands out. Figures~4A and
+4B are for the apparent mix-up of DO-360 and DO-370, and each is
+estimated to be 100\% from the other mouse.
+
+\begin{figure} \begin{center}
+\includegraphics[width=\textwidth]{Figs/fig4.pdf}
+\caption{For selected microbiome samples, plots of the likelihood
+  ratio test statistic versus the estimated proportion contaminated,
+  when considered with each of the genomic DNA samples, one at a time,
+  with the assumption that the microbiome sample is a mixture of the
+  correct sample and that particular contaminant.}
+\end{center} \end{figure}
+
+Figures 4C-4F are four selected mixtures: DO-346 looks to be
+\Sexpr{round(p["DO-346"]*100)}\% from DO-331, DO-358 looks to be
+\Sexpr{round(p["DO-358"]*100)}\% from DO-344, DO-362 looks to be
+\Sexpr{round(p["DO-362"]*100)}\% from DO-361, and DO-329 looks to be
+\Sexpr{round(p["DO-329"]*100)}\% from DO-328. The LRT statistic is a
+measure of the strength of evidence for the sample being a mixture; it
+depends both on the contaminant probability as well as total number of
+sequence reads.
+
+Additional cases are shown in Supplemental Figure~S3, including the
+three more subtle cases (\Sexpr{vec2string(subtle_mix)}), for which
+the LRT statistic is a factor of 10 smaller. For these cases, the
+single-sample analysis to investigate sample mix-ups (see Figure~1)
+looked okay, but the mixture analysis indicates reasonably strong
+evidence that these microbiome samples are contaminated. Supplementary
+Tables S6 and S7 contain the detailed read counts for microbiome
+sample DO-111 (considered as a mixture with DO-112) and DO-191
+(considered as a mixture with DO-146). In each case, the proportion of
+sequence reads with a B allele clearly depends on the genotype of the
+second sample.
+
+
+\begin{figure} \begin{center}
+\includegraphics[width=\textwidth]{Figs/fig5.pdf}
+\caption{Expansion of the lower-left of Figure~3: Plot of maximum
+  achieved likelihood ratio test statistic (for
+  the test of no mixture) versus the estimated proportion from a
+  contaminant. The samples are categorized
+  as in Figure 1, by our conclusions about their status.}
+\end{center} \end{figure}
+
+
+\subsection*{More subtle mixtures}
+
+In Figure~5, we expand the lower-left corner of
+Figure~3. This reveals additional microbiome samples where the LRT
+statistic for contamination is a factor of 10 or 100 smaller, but where
+there is still compelling evidence for contamination.
+
+The minimum LRT statistic across all samples was
+\Sexpr{round(min(sapply(mix, function(a) max(a[,"lrt_p0"], na.rm=TRUE))))},
+which would be
+nominally significant evidence for contamination, but which we believe
+reflects a weakness of our multinomial model. Before concluding
+contamination, we consider plots of the LRT statistic vs the estimated
+contaminant proportion. Figure~S4 displays these plots for 20 selected
+samples: 17 show clear separation of one potential contaminant from
+the others, while the other 3 show no such outlier. We consider these
+17 samples to be likely contaminated, whereas the other 3 are not.
+
+<<error_rate_385_205, echo=FALSE>>=
+mix385 <- mix[["DO-385"]]
+mix205 <- mix[["DO-205"]]
+err385 <- mix385[!is.na(mix385[,"lrt_p0"]) & mix385[,"lrt_p0"] == max(mix385[,"lrt_p0"], na.rm=TRUE),"e"]
+err205 <- mix205[!is.na(mix205[,"lrt_p0"]) & mix205[,"lrt_p0"] == max(mix205[,"lrt_p0"], na.rm=TRUE),"e"]
+@
+
+Among these more subtle sample mixtures is DO-385, which we had
+previously ruled out as simply having insufficient reads, and DO-205,
+which should a high self-distance in Figure~1. Both of these samples
+have high estimated sequencing error rates
+(\Sexpr{myround(err385*100,1)}\% and
+\Sexpr{myround(err205*100,1)}\%, respectively).
+
+
+<<contam_rate_subtle, echo=FALSE>>=
+mixture <- paste0("DO-", c(329, 340, 343, 344, 346, 354, 359, 362,
+                           336, 327, 41, 358, 111, 191, 324))
+all_mix <- paste0("DO-", c(24,101,84,61,72,        415,82,100,220,87,
+                           163,146,111,218,324,    142,165,191,205,358,
+                           343,354,359,362,344,    329,346,41,385,336,
+                           327,340))
+subtle <- all_mix[!(all_mix %in% mixture)]
+
+p_subtle <- sapply(mix[subtle], function(a)
+    a[!is.na(a[,"lrt_p0"]) & a[,"lrt_p0"]==max(a[,"lrt_p0"], na.rm=TRUE), "p"])
+@
+
+Many of these subtle mixtures have low estimated rates of contamination,
+including \Sexpr{sum(p_subtle < 0.05)} with estimated contamination proportion $<$ 5\%, and with
+many approaching the estimated sequencing error rate of about 0.6\%.
+
+
+\clearpage
+\section*{Discussion}
+
+We have described a method for identifying sample mix-ups in
+metagenomic data for which there are sufficient sequence reads from
+the host, as well as corresponding SNP genotypes on the hosts. In our
+study of 500 Diversity Outbred mice, with metagenomic data on 297 of
+the mice, we identified three sets of sample mix-ups (two pairs and
+one trio). In a separate aspect of the project \citep{keller2018}, we
+had generated RNA-Seq data on 300 of the 500 mice, but only 200 were
+in common with 297 mice for which we have metagenomic data. One of the
+three sets of sample mix-ups we identified was also seen when the
+RNA-Seq and SNP data were compared, and so we conclude that the
+sample mix-up concerned the genomic DNA. For the other two sets of
+sample mix-ups we identified, the mice were not assayed for mRNA
+expression, and so we cannot know whether the mix-ups were in the
+genomic DNA samples or in the microbiome samples.
+
+In the analysis to identify possible mix-ups, we identified a number
+of microbiome samples that were similar to a pair of genomic
+DNA samples. We suspected that these were
+mixtures of a pair of samples (one correct and one contaminant). We
+derived a method for analyzing such mixtures, which provides an
+estimate of the proportion of the microbiome sample that comes from
+the contaminant sample. Among the 297 microbiome samples, 15 had
+strong evidence of being mixtures of two samples, with estimated contaminant proportions
+of \Sexpr{round(min(p[c(clear_mix, subtle_mix)])*100)}--\Sexpr{round(max(p[c(clear_mix, subtle_mix)])*100)}\%
+(and with \Sexpr{sum(p[c(clear_mix, subtle_mix)] > 0.5)} having $>$
+50\% from the contaminant sample). An additional 17 samples showed
+more subtle but still compelling evidence of being mixtures. Many of
+these had low estimated rates of contamination,
+including \Sexpr{sum(p_subtle < 0.05)} with estimated contamination proportion $<$ 5\%.
+
+The basis of our analysis is to identify reads that overlap an
+informative SNP, and to compare the SNP allele in the read to what
+would be expected, given the SNP genotype for a particular genomic DNA
+sample. Our approach thus relies on deep shotgun sequencing of the
+microbiome samples as well as dense SNP genotypes on the genomic DNA
+samples. For the latter, we used high-density SNP arrays in the DO
+mice, in conjunction with a database of SNP genotypes on the eight
+founder strains, to produce very-high density SNP genotype information
+in the DO mice.
+
+Metagenomic data on microbiome samples provides a more rich
+understanding of the bacterial functions in the diverse population in
+the samples, relative to what may be learned from single-locus 16S
+ribosomal RNA sequencing. It also provides the ability to identify and
+potentially correct sample mix-ups and mixtures in the microbiome
+samples, which can further strengthen a project's results.
+
+Samples that appear to be mixtures with high proportions of
+contamination should likely be excluded from further analyses. But
+samples with more subtle contamination, say $<$ 5\%, may still provide
+useful data and need not be excluded. The contamination adds to the
+phenotypic noise for such traits as the abundance of individual
+bacterial species, or for measures of
+bacterial diversity. But the contamination, if at a low rate, may be
+swamped by other sources of variation.
+
+
+\clearpage
+\section*{Acknowledgments}
+
+The authors thank the University of Wisconsin Biotechnology Center DNA
+Sequencing Facility for providing sequencing and support services.
+They also thank the University of Wisconsin Center for High Throughput
+Computing in the Department of Computer Sciences for providing
+computational resources and support.
+This work was supported in part by National Institutes of Health
+grants R01GM070683 (to K.W.B.), R01DK101573 (to A.D.A.), and
+R01DK108259 (to F.E.R.), and Postdoctoral Fellowship T15LM0075359 (to
+L.L.T.).
+
+
+\clearpage
+\bibliographystyle{genetics}
+\renewcommand*{\refname}{\normalfont\sffamily\bfseries Literature Cited}
+\bibliography{mb_mixups}
+
+
+
+% supplemental figures and tables
+\renewcommand{\thefigure}{\textbf{S\arabic{figure}}}
+\renewcommand{\thetable}{\textbf{S\arabic{table}}}
+\setcounter{figure}{0}
+
+\setlength{\tabcolsep}{1em}
+\renewcommand{\arraystretch}{1.8}
+
+\clearpage
+% table S1: Expected proportion of microbiome reads with A allele, by joint genotypes of two DNA samples
+<<expected_mixture, results="asis">>=
+# load data
+caption <- paste("Expected proportion of A microbiome reads,",
+                 "assuming it is a mixture of two genomic DNA samples,",
+                 "as function of the genotypes of the two samples.")
+
+probs <- c("AA:AA" = "$1-\\epsilon$",
+           "AB:AA" = "$(1-p)/2 + p(1-\\epsilon)$",
+           "BB:AA" = "$(1-p)\\epsilon + p(1-\\epsilon)$",
+           "AA:AB" = "$(1-p)(1-\\epsilon) + p/2$",
+           "AB:AB" = "$1/2$",
+           "BB:AB" = "$(1-p)\\epsilon + p/2$",
+           "AA:BB" = "$(1-p)(1-\\epsilon) + p\\epsilon$",
+           "AB:BB" = "$(1-p)/2 + p\\epsilon$",
+           "BB:BB" = "$\\epsilon$")
+
+
+tab <- cbind("sample 1 genotype"=rep(c("AA", "AB", "BB"), 3),
+             "sample 2 genotype"=rep(c("AA", "AB", "BB"), each=3),
+             "expected proportion of A allele"=probs)
+
+tab <- tab[c(1,4,7,2,5,8,3,6,9),]
+
+rownames(tab) <- NULL
+
+kable(tab, booktabs=TRUE, caption=caption, escape=FALSE, align="ccc") %>%
+    kable_styling(latex_options="hold_position")
+@
+
+\noindent
+$p$ is the proportion of the microbiome sample coming from genomic DNA sample 2. \\
+$\epsilon$ is the rate of sequencing errors.
+
+
+\clearpage
+% table S2: genotype of sample vs alleles, mix-up
+<<do360_v_do360, results="asis">>=
+samp <- readRDS("Data/sample_results_allchr.rds")
+
+caption <- paste("Read counts in microbiome sample DO-360 broken down by",
+                 "observed SNP allele and by the genotype of genomic DNA sample DO-360.")
+
+# grab data
+tab <- samp[["DO-360"]]["DO-360",,]
+percent <- matrix(paste0("(", myround(tab/rowSums(tab)*100, 1), "\\%)"), ncol=2)
+
+tab <- add_commas(tab)
+
+tab <- cbind("DO-360 genotype"=rownames(tab), "A (\\%)"=tab[,1], " "=percent[,1],
+             "B (\\%)"=tab[,2], " "=percent[,2])
+
+rownames(tab) <- NULL
+
+kable(tab, booktabs=TRUE, caption=caption, escape=FALSE, align="crrrr", col.names=NULL) %>%
+    add_header_above(c("DO-360 genotype", "A (%)"=2, "B (%)"=2)) %>%
+    add_header_above(c(" ", "allele in DO-360 microbiome"=4)) %>%
+    kable_styling(latex_options="hold_position")
+@
+
+
+\clearpage
+% table S3: genotype of sample vs alleles, correct alignment
+<<do360_v_do370, results="asis">>=
+caption <- paste("Read counts in microbiome sample DO-360 broken down by",
+                 "observed SNP allele and by the genotype of genomic DNA sample DO-370.")
+
+# grab data
+tab <- samp[["DO-360"]]["DO-370",,]
+percent <- matrix(paste0("(", myround(tab/rowSums(tab)*100, 1), "\\%)"), ncol=2)
+
+tab <- add_commas(tab)
+
+tab <- cbind("DO-370 genotype"=rownames(tab), A=tab[,1], "(\\%)"=percent[,1],
+             B=tab[,2], "(\\%)"=percent[,2])
+
+rownames(tab) <- NULL
+
+kable(tab, booktabs=TRUE, caption=caption, escape=FALSE, align="crrrr", col.names=NULL) %>%
+    add_header_above(c("DO-370 genotype", "A (%)"=2, "B (%)"=2)) %>%
+    add_header_above(c(" ", "allele in DO-360 microbiome"=4)) %>%
+    kable_styling(latex_options="hold_position")
+@
+
+
+
+\clearpage
+% table S4: joint genotypes of two DNA sample vs read alleles, mixed pair
+<<mixture_do344_do358, results="asis">>=
+# load data
+pairs <- readRDS("Data/pair_results_allchr.rds")
+
+caption <- paste("Read counts in microbiome sample DO-358 broken down by",
+                 "observed SNP allele and by the genotypes of genomic DNA samples",
+                 "DO-358 and DO-344")
+
+tab <- pairs[["DO-358"]]["DO-344",,,]
+percent <- cbind(Apercent=paste0("(", myround(tab[,,"A"]/(tab[,,"A"]+tab[,,"B"])*100,1), "\\%)"),
+                 Bpercent=paste0("(", myround(tab[,,"B"]/(tab[,,"A"]+tab[,,"B"])*100,1), "\\%)"))
+
+col1 <- as.character(add_commas(tab[,,"A"]))
+col2 <- as.character(add_commas(tab[,,"B"]))
+xtab <- cbind("DO-358 genotype"=rep(c("AA", "AB", "BB"), 3),
+              "DO-344 genotype"=rep(c("AA", "AB", "BB"), each=3),
+              A=col1, Apercent=percent[,1],
+              B=col2, Bpercent=percent[,2])
+
+xtab <- xtab[c(1,4,7,2,5,8,3,6,9),]
+
+kable(xtab, booktabs=TRUE, caption=caption, escape=FALSE, align="ccrrrr", col.names=NULL) %>%
+    add_header_above(c("DO-358 genotype", "DO-344 genotype", "A (%)"=2, "B (%)"=2)) %>%
+    add_header_above(c(" ", " ", "allele in DO-358 microbiome"=4)) %>%
+    kable_styling(latex_options="hold_position")
+@
+
+
+
+\clearpage
+% table S5: joint genotypes of two DNA sample vs read alleles, mixed pair
+<<mixture_do101_do102, results="asis">>=
+# load data
+pairs <- readRDS("Data/pair_results_allchr.rds")
+
+caption <- paste("Read counts in microbiome sample DO-101 broken down by",
+                 "observed SNP allele and by the genotypes of genomic DNA samples",
+                 "DO-101 and DO-102")
+
+tab <- pairs[["DO-101"]]["DO-102",,,]
+percent <- cbind(Apercent=paste0("(", myround(tab[,,"A"]/(tab[,,"A"]+tab[,,"B"])*100,1), "\\%)"),
+                 Bpercent=paste0("(", myround(tab[,,"B"]/(tab[,,"A"]+tab[,,"B"])*100,1), "\\%)"))
+
+col1 <- as.character(add_commas(tab[,,"A"]))
+col2 <- as.character(add_commas(tab[,,"B"]))
+xtab <- cbind("DO-101 genotype"=rep(c("AA", "AB", "BB"), 3),
+              "DO-102 genotype"=rep(c("AA", "AB", "BB"), each=3),
+              A=col1, Apercent=percent[,1],
+              B=col2, Bpercent=percent[,2])
+
+xtab <- xtab[c(1,4,7,2,5,8,3,6,9),]
+
+kable(xtab, booktabs=TRUE, caption=caption, escape=FALSE, align="ccrrrr", col.names=NULL) %>%
+    add_header_above(c("DO-101 genotype", "DO-102 genotype", "A (%)"=2, "B (%)"=2)) %>%
+    add_header_above(c(" ", " ", "allele in DO-101 microbiome"=4)) %>%
+    kable_styling(latex_options="hold_position")
+@
+
+
+
+
+\clearpage
+% table S6: joint genotypes of two DNA sample vs read alleles, mixed pair
+<<mixture_do111_do112, results="asis">>=
+# load data
+caption <- paste("Read counts in microbiome sample DO-111 broken down by",
+                 "observed SNP allele and by the genotypes of genomic DNA samples",
+                 "DO-111 and DO-112")
+
+tab <- pairs[["DO-111"]]["DO-112",,,]
+percent <- cbind(Apercent=paste0("(", myround(tab[,,"A"]/(tab[,,"A"]+tab[,,"B"])*100,1), "\\%)"),
+                 Bpercent=paste0("(", myround(tab[,,"B"]/(tab[,,"A"]+tab[,,"B"])*100,1), "\\%)"))
+
+col1 <- as.character(add_commas(tab[,,"A"]))
+col2 <- as.character(add_commas(tab[,,"B"]))
+xtab <- cbind("DO-111 genotype"=rep(c("AA", "AB", "BB"), 3),
+              "DO-112 genotype"=rep(c("AA", "AB", "BB"), each=3),
+              A=col1, Apercent=percent[,1],
+              B=col2, Bpercent=percent[,2])
+
+xtab <- xtab[c(1,4,7,2,5,8,3,6,9),]
+
+kable(xtab, booktabs=TRUE, caption=caption, escape=FALSE, align="ccrrrr", col.names=NULL) %>%
+    add_header_above(c("DO-111 genotype", "DO-112 genotype", "A (%)"=2, "B (%)"=2)) %>%
+    add_header_above(c(" ", " ", "allele in DO-111 microbiome"=4)) %>%
+    kable_styling(latex_options="hold_position")
+@
+
+
+
+\clearpage
+% table S7: joint genotypes of two DNA sample vs read alleles, mixed pair
+<<mixture_do191_do146, results="asis">>=
+# load data
+caption <- paste("Read counts in microbiome sample DO-191 broken down by",
+                 "observed SNP allele and by the genotypes of genomic DNA samples",
+                 "DO-191 and DO-146")
+
+tab <- pairs[["DO-191"]]["DO-146",,,]
+percent <- cbind(Apercent=paste0("(", myround(tab[,,"A"]/(tab[,,"A"]+tab[,,"B"])*100,1), "\\%)"),
+                 Bpercent=paste0("(", myround(tab[,,"B"]/(tab[,,"A"]+tab[,,"B"])*100,1), "\\%)"))
+
+col1 <- as.character(add_commas(tab[,,"A"]))
+col2 <- as.character(add_commas(tab[,,"B"]))
+xtab <- cbind("DO-191 genotype"=rep(c("AA", "AB", "BB"), 3),
+              "DO-146 genotype"=rep(c("AA", "AB", "BB"), each=3),
+              A=col1, Apercent=percent[,1],
+              B=col2, Bpercent=percent[,2])
+
+xtab <- xtab[c(1,4,7,2,5,8,3,6,9),]
+
+kable(xtab, booktabs=TRUE, caption=caption, escape=FALSE, align="ccrrrr", col.names=NULL) %>%
+    add_header_above(c("DO-191 genotype", "DO-146 genotype", "A (%)"=2, "B (%)"=2)) %>%
+    add_header_above(c(" ", " ", "allele in DO-191 microbiome"=4)) %>%
+    kable_styling(latex_options="hold_position")
+@
+
+
+
+\clearpage
+\begin{figure} \begin{center}
+\includegraphics[height=8in]{Figs/figS1.pdf}
+\caption{Illustration of genome reconstruction. \textbf{A}: Inferred
+  diplotype across the genome for mouse DO-359, with an arbitrary choice
+  of phase. (For example, if there is a region of homozygosity, the
+  haplotypes above can be swapped relative to the haplotypes below.)
+  White indicates unknown (no diplotype had probability $>$0.5).
+  \textbf{B}: Heat map of the diplotype probabilities for mouse DO-359
+  along chromosome 16. Only diplotypes that achieved probability $>$ 0.25 are shown.}
+\end{center} \end{figure}
+
+\clearpage
+\begin{figure} \begin{center}
+\includegraphics[width=\textwidth]{Figs/figS2.pdf}
+\caption{For selected microbiome samples, plots of their distance to
+  each genomic sample, with distance measured by taking, among reads
+  that overlapped a SNP where the genotyped sample was homozygous, the
+  proportion with an allele that was discordant with the inferred SNP
+  genotype. The sample with what should be the correct label is
+  highlighted in dark pink. A set of low-quality DNA samples are
+  highlighted in pale pink.}
+\end{center} \end{figure}
+
+\clearpage
+\begin{figure} \begin{center}
+\includegraphics[height=8in]{Figs/figS3.pdf}
+\caption{For selected microbiome samples, plots of the likelihood
+  ratio test statistic versus the estimated proportion contaminated,
+  when considered with each of the genomic DNA samples, one at a time,
+  with the assumption that the microbiome sample is a mixture of the
+  correct sample and that particular contaminant. Note the change in
+  the y-axis limits in the bottom row of panels.}
+\end{center} \end{figure}
+
+
+\clearpage
+\begin{figure} \begin{center}
+\includegraphics[height=8in]{Figs/figS4.pdf}
+\caption{For further selected microbiome samples, plots of the likelihood
+  ratio test statistic versus the estimated proportion contaminated,
+  when considered with each of the genomic DNA samples, one at a time,
+  with the assumption that the microbiome sample is a mixture of the
+  correct sample and that particular contaminant. Note the change in
+  the y-axis limits in the bottom three rows of panels.}
+\end{center} \end{figure}
+
+
+
+
+
+\end{document}
