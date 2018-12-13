@@ -280,7 +280,9 @@ Founder SNP genotypes are available as a
 SQLite database at figshare,
 \href{https://doi.org/10.6084/m9.figshare.5280229.v2}{doi:10.6084/m9.figshare.5280229.v2}.
 
-Analysis scripts and processed data will be made available at GitHub.
+The processed data and the custom R scripts used for our
+analyses and to create the figures and tables are at GitHub
+(\url{https://github.com/kbroman/Paper_MBmixups}).
 
 An R package, R/mbmixture, for performing the mixture analysis is
 available at Github: \url{https://github.com/kbroman/mbmixture}.
