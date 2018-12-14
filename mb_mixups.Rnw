@@ -484,9 +484,9 @@ is a rough estimate of the proportion of the sample that came from DO-344.
 (Further, we can estimate the sequencing error rate as
 \Sexpr{myround(pair358_344["AA","AA","B"]/sum(pair358_344["AA","AA",])*100,1)}\%.)
 
-In contrast, in Table~S5 consider reads for microbiome sample DO-101,
+In Table~S5 we consider reads for microbiome sample DO-101,
 split according to the SNP genotypes at genomic DNA samples DO-101 and
-DO-102. Here, we see that the frequency of A reads does not depend on
+DO-102. In contrast to Table~S4, we see that the frequency of A reads does not depend on
 the genotype at DO-102; the DO-101 microbiome sample does not appear
 to be contaminated by DO-102.
 
@@ -552,7 +552,7 @@ Figure~4 provides more detailed results for a selected set of samples.
 Each panel is a scatterplot of the LRT statistic versus the estimated
 contaminant probability, for a single microbiome sample considered as
 a mixture of itself and one other genomic DNA sample, and with the
-points corresponding to the 500 possible genomic DNA samples. In each
+points corresponding to the other 499 genomic DNA samples. In each
 case, a single possible contaminant stands out. Figures~4A and
 4B are for the apparent mix-up of DO-360 and DO-370, and each is
 estimated to be 100\% from the other mouse.
@@ -625,7 +625,7 @@ err205 <- mix205[!is.na(mix205[,"lrt_p0"]) & mix205[,"lrt_p0"] == max(mix205[,"l
 
 Among these more subtle sample mixtures is DO-385, which we had
 previously ruled out as simply having insufficient reads, and DO-205,
-which should a high self-distance in Figure~1. Both of these samples
+which showed a high self-distance in Figure~1. Both of these samples
 have high estimated sequencing error rates
 (\Sexpr{myround(err385*100,1)}\% and
 \Sexpr{myround(err205*100,1)}\%, respectively).
