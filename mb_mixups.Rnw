@@ -102,12 +102,12 @@ multi-parent populations, data diagnostics, sample mislabeling
 \section*{Abstract}
 
 In a Diversity Outbred mouse project with genotype data on 500
-animals, including 297 with microbiome data, we identified three sets
+mice, including 297 with microbiome data, we identified three sets
 of sample mix-ups (two pairs and one trio) as well as at least 15
 microbiome samples that appear to be mixtures of pairs of mice. The
-microbiome data consisted of shotgun sequencing reads from DNA
-extracted from mouse feces, in order to characterize the population of
-bacterial species in the mouse gut. These sequence reads included
+microbiome data consisted of shotgun sequencing reads from fecal DNA,
+used to characterize the gut microbial communities present in these mice.
+These sequence reads included
 sufficient reads derived from the host mouse to identify the
 individual. A number of microbiome samples appeared to contain a
 mixture of DNA from two mice. We describe a method for identifying
@@ -138,12 +138,16 @@ expression quantitative trait loci (eQTL) can be used to identify
 individuals.
 
 Studies to identify host loci that affect microbiome population
-composition could similarly be affected by sample mix-ups. And if the
+composition could similarly be affected by sample mix-ups. If the
 microbiome analysis focuses on a single locus (such as 16S ribosomal
 RNA), one would have little ability to detect mix-ups. But when
-applying shotgun sequencing to microbiome samples, to obtain
-metagenomic data, there may be sufficient sequence reads from the mouse host to
+applying shotgun sequencing to microbiome samples to obtain
+metagenomic data, there may be sufficient sequence reads from the host to
 identify the individual.
+Fecal samples contain a variable fraction of host DNA that comes from
+intestinal epithelial cells. These cells are renewed every 4--5 days \citep{eastwood1977}, and
+dead cell slough off into the lumen and are eliminated in feces.
+
 
 In a Diversity Outbred (DO) mouse project with genotype data on 500
 animals \citep{keller2018}, including 297 with metagenomic sequencing
@@ -155,8 +159,8 @@ strains \citep[the same founders as the Collaborative Cross;][]{churchill2004}.
 
 The microbiome data consisted of shotgun sequencing reads from
 DNA extracted from mouse feces, in order to characterize the
-population of bacterial species in the mouse gut. These sequence reads
-included sufficient reads derived from the host mouse to identify the
+population of microbial functions in the mouse gut. These sequence reads
+included sufficient reads derived from the host to identify the
 individual. A number of microbiome samples appeared to contain a
 mixture of DNA from two mice. We describe a method for identifying
 sample mix-ups in such microbiome data, as well as a method for
@@ -209,10 +213,11 @@ NE). The GigaMUGA array includes 143,259 SNPs. We focused on 110,143
 autosomal SNPs that were placed in quality tiers 1 or 2 (out of 4) in
 \citet{gigamuga}.
 
-We used a hidden Markov model (HMM) to calculate 36-state diplotype
-probabilities, given the multipoint SNP genotype data, along each
-chromosome. (We use the term diplotype to refer to a pair of founder
-haplotypes). We then used a database of genotypes of the eight founder
+We used a hidden Markov model (HMM) to calculate the probability of
+each of the 36 possible diplotypes (that is, pairs of founder
+haplotypes) along each chromosome in each DO mouse, given the
+multipoint SNP genotype data.
+We then used a database of genotypes of the eight founder
 strains at 33 million SNP variants (based on a resequencing project at
 Sanger) to get inferred SNP genotypes for all 500 DO mice at all SNPs.
 To save computation time, we assumed constant diplotype probabilities
@@ -249,7 +254,7 @@ SNP genotypes for the pair of samples.
 
 We assumed that the microbiome sample contained a proportion $p$ of
 the contaminant, and assumed a sequencing error rate of $\epsilon$,
-and calculated the expected proportion of reads with an A vs B allele
+and calculated the expected proportion of reads with an A vs.\ B allele
 as a function of the genotypes of the two mice that contributed to the
 mixture (Supplementary Table S1). With this multinomial model, we then
 derived maximum likelihood estimates (MLEs) for $p$ and $\epsilon$ by
@@ -260,7 +265,7 @@ plugging in the MLEs of $p$ and $\epsilon$, to the likelihood
 evaluated at $p=0$ with $\epsilon$ estimated under that constraint.
 
 The LRT values throughout are extremely large, and so to identify
-potential mixtures, we considered a plot of the LRT versus the estimated mixture
+potential mixtures, we considered a plot of the LRT vs.\ the estimated mixture
 proportion, with a sample
 considered as a mixture with each of the other possible sample as the
 contaminant, and looked for a separation between one possible
@@ -273,9 +278,9 @@ R/mbmixture (\url{https://github.com/kbroman/mbmixture}).
 
 \subsection*{Data and software availability}
 
-Raw microbiome sequence reads are available at
-\textbf{\emph{(some general sequence archive?)}}.
-The GigaMUGA SNP genotypes are available at \textbf{\emph{(figshare?)}}.
+Raw microbiome sequence reads will be made available at
+the Sequence Read Archive.
+The GigaMUGA SNP genotypes will be made available in R/qtl2 format at FigShare.
 Founder SNP genotypes are available as a
 SQLite database at figshare,
 \href{https://doi.org/10.6084/m9.figshare.5280229.v2}{doi:10.6084/m9.figshare.5280229.v2}.
@@ -303,14 +308,14 @@ percent_mouse_reads <- mouse_reads/tot_reads * 100
 Of the 300 DO mice considered for the microbiome portion of this project,
 297 gave usable data, with a median of
 \Sexpr{round(median(tot_reads/10^6))} million reads, counting
-paired-end reads individually. (The vast
-majority had more than 10 million reads.) There was considerable
-variation in the proportion of reads that were derived from the mouse
+paired-end reads individually; the vast
+majority had more than 10 million reads. There was considerable
+variation in the proportion of reads that were derived from the
 host. The median was \Sexpr{myround(median(percent_mouse_reads),1)}\%,
 but \Sexpr{sum(percent_mouse_reads < 1)} mice had $<$ 1\% and
 \Sexpr{sum(percent_mouse_reads > 25)} mice had $>$ 25\%. There was a
 strong batch effect, with the second batch of microbiome samples having much lower
-proportions of reads coming from the mouse host than the other two
+proportions of reads coming from the host than the other two
 batches.
 
 We used high-density SNP genotypes, from the GigaMUGA array, to infer
@@ -385,7 +390,7 @@ x-axis being the distance to the corresponding genomic DNA sample
 
 \begin{figure} \begin{center}
 \includegraphics[width=\textwidth]{Figs/fig1.pdf}
-\caption{Plot of minimum distance vs distance to self. Each point is a
+\caption{Plot of minimum distance vs.\ distance to self. Each point is a
   microbiome sample and distances to genomic DNA samples are measured
   by taking, among reads that overlapped a SNP where the genotyped
   sample was homozygous, the proportion with an allele that was
@@ -397,9 +402,9 @@ x-axis being the distance to the corresponding genomic DNA sample
 For microbiome samples along the diagonal, the corresponding genomic
 DNA sample was the closest, and where this distance is small
 (lower-left corner), we can conclude that the microbiome sample is
-correctly labeled. (However, as we will see below, a couple of these
+correctly labeled. However, as we will see below, a couple of these
 look to be mixtures, contaminated by a small amount of another
-sample.)
+sample.
 
 
 There are
@@ -526,7 +531,7 @@ contaminant probability.
 \begin{figure} \begin{center}
 \includegraphics[width=\textwidth]{Figs/fig3.pdf}
 \caption{Plot of maximum achieved likelihood ratio test statistic (for
-  the test of no mixture) versus the estimated proportion from a
+  the test of no mixture) vs.\ the estimated proportion from a
   contaminant, for each microbiome sample. The samples are categorized
   as in Figure 1, by our conclusions about their status.}
 \end{center} \end{figure}
@@ -549,7 +554,7 @@ and with LRT statistics of
 $\times 10^4$.
 
 Figure~4 provides more detailed results for a selected set of samples.
-Each panel is a scatterplot of the LRT statistic versus the estimated
+Each panel is a scatterplot of the LRT statistic vs.\ the estimated
 contaminant probability, for a single microbiome sample considered as
 a mixture of itself and one other genomic DNA sample, and with the
 points corresponding to the other 499 genomic DNA samples. In each
@@ -560,7 +565,7 @@ estimated to be 100\% from the other mouse.
 \begin{figure} \begin{center}
 \includegraphics[width=\textwidth]{Figs/fig4.pdf}
 \caption{For selected microbiome samples, plots of the likelihood
-  ratio test statistic versus the estimated proportion contaminated,
+  ratio test statistic vs.\ the estimated proportion contaminated,
   when considered with each of the genomic DNA samples, one at a time,
   with the assumption that the microbiome sample is a mixture of the
   correct sample and that particular contaminant.}
@@ -592,7 +597,7 @@ second sample.
 \includegraphics[width=\textwidth]{Figs/fig5.pdf}
 \caption{Expansion of the lower-left of Figure~3: Plot of maximum
   achieved likelihood ratio test statistic (for
-  the test of no mixture) versus the estimated proportion from a
+  the test of no mixture) vs.\ the estimated proportion from a
   contaminant. The samples are categorized
   as in Figure 1, by our conclusions about their status.}
 \end{center} \end{figure}
@@ -610,7 +615,7 @@ The minimum LRT statistic across all samples was
 which would be
 nominally significant evidence for contamination, but which we believe
 reflects a weakness of our multinomial model. Before concluding
-contamination, we consider plots of the LRT statistic vs the estimated
+contamination, we consider plots of the LRT statistic vs.\ the estimated
 contaminant proportion. Figure~S4 displays these plots for 20 selected
 samples: 17 show clear separation of one potential contaminant from
 the others, while the other 3 show no such outlier. We consider these
@@ -974,7 +979,7 @@ kable(xtab, booktabs=TRUE, caption=caption, escape=FALSE, align="ccrrrr", col.na
 \begin{figure} \begin{center}
 \includegraphics[height=8in]{Figs/figS3.pdf}
 \caption{For selected microbiome samples, plots of the likelihood
-  ratio test statistic versus the estimated proportion contaminated,
+  ratio test statistic vs.\ the estimated proportion contaminated,
   when considered with each of the genomic DNA samples, one at a time,
   with the assumption that the microbiome sample is a mixture of the
   correct sample and that particular contaminant. Note the change in
@@ -986,7 +991,7 @@ kable(xtab, booktabs=TRUE, caption=caption, escape=FALSE, align="ccrrrr", col.na
 \begin{figure} \begin{center}
 \includegraphics[height=8in]{Figs/figS4.pdf}
 \caption{For further selected microbiome samples, plots of the likelihood
-  ratio test statistic versus the estimated proportion contaminated,
+  ratio test statistic vs.\ the estimated proportion contaminated,
   when considered with each of the genomic DNA samples, one at a time,
   with the assumption that the microbiome sample is a mixture of the
   correct sample and that particular contaminant. Note the change in
