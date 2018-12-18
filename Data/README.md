@@ -14,3 +14,6 @@
 
 - [`total_read.rds`](total_reads.rds) - data frame of size 297 x 19
   with total reads for each microbiome sample on each chromosome.
+
+- [`attieDO_v1.zip`](attieDO_v1.zip) - GigaMUGA genotype data for the
+  500 DO mice, in R/qtl2 format
