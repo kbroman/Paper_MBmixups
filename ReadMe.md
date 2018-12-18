@@ -34,6 +34,8 @@ R packages needed to compile the paper:
 - [R/lineup2](https://github.com/kbroman/lineup2)
 - [R/mbmixture](https://github.com/kbroman/mbmixture)
 
+Current PDF of the paper at <https://www.biostat.wisc.edu/~kbroman/publications/mb_mixups.pdf>
+
 ---
 
 ### License
