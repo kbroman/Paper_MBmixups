@@ -1,6 +1,6 @@
 R_OPTS=--no-save --no-restore --no-init-file --no-site-file
 
-all: mb_mixups.pdf R/study_mixtures_further.html
+all: mb_mixups.pdf
 
 mb_mixups.pdf: LaTeX/mb_mixups.tex mb_mixups.bib \
 			   Figs/fig1.pdf Figs/fig2.pdf Figs/fig3.pdf Figs/fig4.pdf Figs/fig5.pdf \
