@@ -228,7 +228,7 @@ SNP genotypes to collapse the 36-state diplotype probabilities to
 3-state SNP genotypes. The inferred SNP genotype was that with maximum
 marginal probability, provided it was $>$ 0.95. Calculations were
 performed in R \citep{RCore} using R/qtl2
-(\url{https://kbroman.org/qtl2}).
+\citep{broman2019}.
 
 \subsection*{Sample mix-ups}
 
