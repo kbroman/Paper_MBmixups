@@ -36,6 +36,8 @@ R packages needed to compile the paper:
 
 Current PDF of the paper at <https://www.biostat.wisc.edu/~kbroman/publications/mb_mixups.pdf>
 
+It's also on [bioRxiv](https://www.biorxiv.org): <https://doi.org/10.1101/529040>
+
 ---
 
 ### License
