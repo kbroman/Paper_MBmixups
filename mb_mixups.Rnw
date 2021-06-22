@@ -233,7 +233,7 @@ performed in R \citep{RCore} using R/qtl2
 \subsection*{Sample mix-ups}
 
 For each microbiome sample, we counted the number of reads with each
-allele at the locations of the 33 millions SNPs among the eight founder
+allele at the locations of the 33 million SNPs among the eight founder
 strains. We omitted SNPs that had more than two alleles among the
 eight founders. We compared each microbiome sample to each of the 500
 genotyped samples and calculated a measure of distance
@@ -280,17 +280,19 @@ R/mbmixture (\url{https://github.com/kbroman/mbmixture}).
 
 Raw microbiome sequence reads will be made available at
 the Sequence Read Archive.
-The GigaMUGA SNP genotypes will be made available in R/qtl2 format at FigShare.
+The GigaMUGA SNP genotypes are from \citet{keller2018} and are available at \url{https://dodb.jax.org}.
 Founder SNP genotypes are available as a
 SQLite database at figshare,
-\href{https://doi.org/10.6084/m9.figshare.5280229.v2}{doi:10.6084/m9.figshare.5280229.v2}.
+\href{https://doi.org/10.6084/m9.figshare.5280229.v3}{doi:10.6084/m9.figshare.5280229.v3}.
 
 The processed data and the custom R scripts used for our
-analyses and to create the figures and tables are at GitHub
-(\url{https://github.com/kbroman/Paper_MBmixups}).
+analyses and to create the figures and tables are at GitHub,
+\url{https://github.com/kbroman/Paper_MBmixups}.
 
 An R package, R/mbmixture, for performing the mixture analysis is
-available at Github: \url{https://github.com/kbroman/mbmixture}.
+available at the Comprehensive R Archive Network (CRAN),
+\url{https://cran.r-project.org/package=mbmixture},
+and on Github, \url{https://github.com/kbroman/mbmixture}.
 
 
 
