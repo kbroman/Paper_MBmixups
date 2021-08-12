@@ -1,7 +1,5 @@
 R_OPTS=--no-save --no-restore --no-init-file --no-site-file
 
-all: mb_mixups.pdf
-
 mb_mixups.pdf: LaTeX/mb_mixups.tex mb_mixups.bib \
 			   Figs/fig1.pdf Figs/fig2.pdf Figs/fig3.pdf Figs/fig4.pdf Figs/fig5.pdf \
 			   Figs/figS1.pdf Figs/figS2.pdf Figs/figS3.pdf Figs/figS4.pdf
@@ -30,6 +28,3 @@ R/mixture_results.rds: R/mixture_results.R Data/pair_results_allchr.rds
 
 clean:
 	rm Figs/fig?.pdf LaTeX/mb_mixups.tex LaTeX/mb_mixups.bbl  LaTeX/mb_mixups.aux LaTeX/mb_mixups.out LaTeX/mb_mixups.blg LaTeX/mb_mixups.log
-
-web: mb_mixups.pdf
-	scp mb_mixups.pdf broman-10.biostat.wisc.edu:Website/publications/
