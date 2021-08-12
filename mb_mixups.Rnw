@@ -150,21 +150,23 @@ dead cell slough off into the lumen and are eliminated in feces.
 
 
 In a Diversity Outbred (DO) mouse project with genotype data on 500
-animals \citep{keller2018}, including 297 with metagenomic sequencing
-data from their fecal microbiome, we identified three sets of sample mix-ups
-(two pairs and one trio) as well as at least 15 microbiome samples that appeared
-to be mixtures of pairs of mice. DO mice \citep{churchill2012, svenson2012}
+animals \citep{keller2018}, we have metagenomic sequencing data
+from the fecal microbiome of 297 samples.
+DO mice \citep{churchill2012, svenson2012}
 are an advanced intercross population derived from eight founder
 strains \citep[the same founders as the Collaborative Cross;][]{churchill2004}.
-
-The microbiome data consisted of shotgun sequencing reads from
+The microbiome data consists of shotgun sequencing reads from
 DNA extracted from mouse feces, in order to characterize the
 population of microbial functions in the mouse gut. These sequence reads
-included sufficient reads derived from the host to identify the
-individual. A number of microbiome samples appeared to contain a
-mixture of DNA from two mice. We describe a method for identifying
+include sufficient reads derived from the host to identify the
+individual.
+We describe a method for identifying
 sample mix-ups in such microbiome data, as well as a method for
 evaluating sample mixtures in this context.
+We identified three sets of sample mix-ups
+(two pairs and one trio) as well as at least 15 microbiome samples that appeared
+to be mixtures of pairs of mice.
+
 
 
 \clearpage
@@ -198,7 +200,7 @@ one reverse read file. Reads were then trimmed to remove barcodes
 (\verb|fastx_trimmer -f 9 -Q 33|) and for read quality
 (\verb|fastq_quality_trimmer -t 20 -l 30 -Q33|). Trimmed reads files
 were re-paired (with unpaired reads removed) using custom perl
-scripts. Reads were mapped to the mouse genome using bowtie2
+scripts. Reads were mapped to the mouse genome (build GRCm38/mm10) using bowtie2
 \citep[version 2.2.7;][]{bowtie2} with default settings. Host-derived reads were
 identified using samtools \citep[version 1.3;][]{samtools}. Three
 metagenomic samples did not yield DNA and were excluded from further
@@ -318,7 +320,42 @@ but \Sexpr{sum(percent_mouse_reads < 1)} mice had $<$ 1\% and
 \Sexpr{sum(percent_mouse_reads > 25)} mice had $>$ 25\%. There was a
 strong batch effect, with the second batch of microbiome samples having much lower
 proportions of reads coming from the host than the other two
-batches.
+batches. The reads mapping to the mouse genome spanned all
+chromosomes, and the absolute counts had a median of
+\Sexpr{myround(median(mouse_reads)/1e6, 1)}~million,
+with \Sexpr{round(mean(mouse_reads >= 1e6)*100)}\% of samples having
+$>$ 1 million reads mapping to the mouse genome,
+and just \Sexpr{sum(mouse_reads <= 1e5)} samples having $<$ 100,000
+reads mapping to the mosue genome.
+
+<<calc_geno_stats>>=
+summary_file <- "Data/geno_imp_summary.rds"
+if(file.exists(summary_file)) {
+    geno_imp <- readRDS(summary_file)
+} else {
+    geno_imp <- NULL
+    for(chr in 1:19) {
+        file <- paste0("Analysis/SnpCalls/imp_snp_", chr, "_modified.RData")
+        load(file)
+
+        # expand imputed snps from index snps to all snps
+        imp_snps <- imp_snps[,snpinfo$snp_id[snpinfo$index]]
+
+        # counts of total genotypes and missing genotypes
+        this_chr <- cbind(n_snp=rep(ncol(imp_snps), nrow(imp_snps)),
+                          n_na=rowSums(is.na(imp_snps)))
+
+        if(is.null(geno_imp)) geno_imp <- this_chr
+        else {
+            stopifnot(all(rownames(geno_imp) == rownames(this_chr)))
+            geno_imp <- geno_imp + this_chr
+        }
+    }
+    saveRDS(geno_imp, summary_file)
+}
+has_mbdna <- sub("^DO0", "DO", num_reads$mouse_uncorrectedNames)
+has_mbdna <- sub("^DO", "DO-", has_mbdna)
+@
 
 We used high-density SNP genotypes, from the GigaMUGA array, to infer
 the 36-state diplotypes in each of the DO mice, using a hidden Markov
@@ -326,8 +363,18 @@ model to calculate the diplotype probabilities conditional on the
 multipoint SNP data. (See Supplementary Figure S1 for a genome
 reconstruction of one DO mouse, along with the detailed diplotype
 probabilities along one chromosome.) We then used a database of the
-eight founder strains' genotypes at 33 million SNPs to infer the
-corresponding SNP genotypes in the DO mice.
+eight founder strains' genotypes at \Sexpr{round(geno_imp[1,1]/1e6)}~million
+autosomal SNPs to infer the corresponding SNP genotypes in the DO mice.
+The median number of missing genotypes in the imputed data was
+only \Sexpr{add_commas(round(median(geno_imp[,2])))}
+(\Sexpr{round(median(geno_imp[,2]/geno_imp[,1]*100),1)}\%),
+though there were \Sexpr{numbers[sum(geno_imp[,2]>1e6)]} samples with more than
+a million missing values in the imputed genotypes, including one sample
+(\Sexpr{names(which.min(geno_imp[,1]-geno_imp[,2]))}) with
+\Sexpr{round(max(geno_imp[,2])/1e6)}~million missing values in the
+imputations, though this sample still had
+\Sexpr{round(min(geno_imp[,1]-geno_imp[,2])/1e6)}~million
+imputed genotypes and was not among the mice with microbiome data.
 
 \subsection*{Sample mix-ups}
 
@@ -371,7 +418,7 @@ B allele, and among the \Sexpr{myround(nBB_360/1e6, 1)} million
 reads that overlapped a SNP where DO-360 had genotype BB,
 \Sexpr{myround(pA_BB_360*100, 1)}\% had an A allele. The distance
 between microbiome sample DO-360 and genomic DNA sample DO-360 was
-thus \Sexpr{myround(d_360, 2)}.
+thus \Sexpr{myround(d_360, 2)}, the overall proportion of discrepant calls.
 
 If we compare microbiome sample DO-360 to genomic DNA sample DO-370
 (Supplementary Table S3), however, we find that only \Sexpr{myround(pB_AA_370*100,1)}\%
@@ -398,7 +445,10 @@ x-axis being the distance to the corresponding genomic DNA sample
   sample was homozygous, the proportion with an allele that was
   discordant with the inferred SNP genotype. The microbiome samples
   are categorized according to our conclusions about their
-  status.}
+  status: light blue points are samples that look okay, light purple points
+  had few microbiome reads, salmon points had bad genomic DNA samples,
+  green points appear to be mixtures, and dark purple points appear to
+  be sample mix-ups.}
 \end{center} \end{figure}
 
 For microbiome samples along the diagonal, the corresponding genomic
@@ -697,7 +747,19 @@ microbiome samples as well as dense SNP genotypes on the genomic DNA
 samples. For the latter, we used high-density SNP arrays in the DO
 mice, in conjunction with a database of SNP genotypes on the eight
 founder strains, to produce very-high density SNP genotype information
-in the DO mice.
+in the DO mice. Our approach might be applied to other populations;
+the two key features that are needed are detailed host genotype data
+and sufficient metagenomic reads that are derived from the host.
+
+Our approach to identify mix-ups was simplistic: simply counting
+discrepant reads at homozygous SNPs, pooled across all SNPs. One might
+instead seek to sufficient metagenomic reads at individual SNPs in
+order to determine SNP genotypes, but our approach is more expedient.
+Another alternative would be to perform QTL mapping with
+microbiome-derived phenotypes and identify sample mix-ups using an
+approach like that developed for gene expression data. This would have
+the advantage of not relying on host-derived metagenomic reads, but
+would require numerous microbiome QTL with strong effects.
 
 Metagenomic data on microbiome samples provides a more rich
 understanding of the bacterial functions in the diverse population in
@@ -724,6 +786,8 @@ Sequencing Facility for providing sequencing and support services.
 They also thank the University of Wisconsin Center for High Throughput
 Computing in the Department of Computer Sciences for providing
 computational resources and support.
+Amelie Baud and an anonymous reviewer provided valuable comments for
+improvement of the manuscript.
 This work was supported in part by National Institutes of Health
 grants R01GM070683 (to K.W.B.), R01DK101573 (to A.D.A.), and
 R01DK108259 (to F.E.R.), and Postdoctoral Fellowship T15LM007359 (to
