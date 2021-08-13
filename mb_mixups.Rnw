@@ -445,10 +445,7 @@ x-axis being the distance to the corresponding genomic DNA sample
   sample was homozygous, the proportion with an allele that was
   discordant with the inferred SNP genotype. The microbiome samples
   are categorized according to our conclusions about their
-  status: light blue points are samples that look okay, light purple points
-  had few microbiome reads, salmon points had bad genomic DNA samples,
-  green points appear to be mixtures, and dark purple points appear to
-  be sample mix-ups.}
+  status.}
 \end{center} \end{figure}
 
 For microbiome samples along the diagonal, the corresponding genomic
@@ -461,7 +458,7 @@ sample.
 
 There are
 \Sexpr{numbers[sum(!is.na(self) & self > 0.15 & best < 0.01)]}
-microbiome samples (colored purple in Figure~1) where the distance to
+microbiome samples (colored dark purple in Figure~1) where the distance to
 the corresponding genomic DNA sample was $>$ 0.15 but the minimum
 distance to a microbiome sample was $<$ 0.01. These are clear sample
 mix-ups, and form two pairs and one trio: DO-360/DO-370 (mentioned
@@ -494,9 +491,10 @@ sample DO-83.
 
 Returning to Figure~1, there are a number of microbiome samples that
 are not particularly close to the corresponding genomic DNA sample,
-nor to any sample. For DO-357 and DO-397, the genomic DNA samples were
-of low quality. For DO-174 and DO-385, the microbiome data included
-only a small number of reads. But another 15 microbiome samples appear
+nor to any sample. For DO-357 and DO-397 (salmon-colored points), the genomic DNA samples were
+of low quality. For DO-174 and DO-385 (colored light purple), the microbiome data included
+only a small number of reads. But another 15 microbiome samples (in
+green) appear
 to be mixtures of two samples.
 
 Consider, for example, microbiome sample DO-358. It is closest to the
@@ -757,7 +755,7 @@ instead seek to sufficient metagenomic reads at individual SNPs in
 order to determine SNP genotypes, but our approach is more expedient.
 Another alternative would be to perform QTL mapping with
 microbiome-derived phenotypes and identify sample mix-ups using an
-approach like that developed for gene expression data. This would have
+approach like that developed for gene expression data \citep{westra2011}. This would have
 the advantage of not relying on host-derived metagenomic reads, but
 would require numerous microbiome QTL with strong effects.
 
