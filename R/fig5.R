@@ -86,5 +86,8 @@ for(i in which(rownames(sub) == "DO-142")) {
     text(sub$p[i]+0.008, sub$lrt_p0[i]/1e5+0.01, rownames(sub)[i], adj=c(0, 0.5))
 }
 
+legend("topright", pch=21, pt.bg=the_colors[-5],
+       c("okay", "low reads", "bad DNA", "mixture", "sample mix-up")[-5], bg="gray92")
+
 
 dev.off()
