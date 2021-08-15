@@ -755,7 +755,7 @@ instead seek to sufficient metagenomic reads at individual SNPs in
 order to determine SNP genotypes, but our approach is more expedient.
 Another alternative would be to perform QTL mapping with
 microbiome-derived phenotypes and identify sample mix-ups using an
-approach like that developed for gene expression data \citep{westra2011}. This would have
+approach like that developed for gene expression data \citep[e.g.,][]{westra2011}. This would have
 the advantage of not relying on host-derived metagenomic reads, but
 would require numerous microbiome QTL with strong effects.
 
