@@ -151,13 +151,11 @@ dead cell slough off into the lumen and are eliminated in feces.
 
 In a Diversity Outbred (DO) mouse project with genotype data on 500
 animals \citep{keller2018}, we have metagenomic sequencing data
-from the fecal microbiome of 297 samples.
+collected from fecal DNA of 297 mice.
 DO mice \citep{churchill2012, svenson2012}
 are an advanced intercross population derived from eight founder
 strains \citep[the same founders as the Collaborative Cross;][]{churchill2004}.
-The microbiome data consists of shotgun sequencing reads from
-DNA extracted from mouse feces, in order to characterize the
-population of microbial functions in the mouse gut. These sequence reads
+The metagenomic sequence data
 include sufficient reads derived from the host to identify the
 individual.
 We describe a method for identifying
@@ -762,7 +760,7 @@ would require numerous microbiome QTL with strong effects.
 Metagenomic data on microbiome samples provides a more rich
 understanding of the bacterial functions in the diverse population in
 the samples, relative to what may be learned from single-locus 16S
-ribosomal RNA sequencing. It also provides the ability to identify and
+ribosomal RNA gene sequencing. It also provides the ability to identify and
 potentially correct sample mix-ups and mixtures in the microbiome
 samples, which can further strengthen a project's results.
 
