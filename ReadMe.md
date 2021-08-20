@@ -1,5 +1,7 @@
 ## Identification of sample mix-ups and mixtures in microbiome data in Diversity Outbred mice
 
+[![DOI](https://zenodo.org/badge/161683290.svg)](https://zenodo.org/badge/latestdoi/161683290)
+
 Files for a paper (in preparation) on detecting sample mix-ups and
 mixtures in microbiome data in Diversity Outbred mice.
 
