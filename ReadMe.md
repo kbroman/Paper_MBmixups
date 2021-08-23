@@ -40,7 +40,19 @@ Current PDF of the paper at <https://www.biostat.wisc.edu/~kbroman/publications/
 
 It's also on [bioRxiv](https://www.biorxiv.org): <https://doi.org/10.1101/529040>
 
----
+
+### Additional data
+
+- Intermediate data files at [figshare
+  doi:10.6084/m9.figshare.16413279](https://doi.org/10.6084/m9.figshare.16413279)
+
+- Primary metagenomic sequence data at [Sequence Read Archive (SRA),
+  accession
+  PRJNA744213](https://www.ncbi.nlm.nih.gov/bioproject/PRJNA744213)
+
+- SQLite database of variants in the Collaborative Cross founders at
+  [Figshare, doi:10.6084/m9.figshare.5280229.v3](https://doi.org/10.6084/m9.figshare.5280229.v3)
+
 
 ### License
 

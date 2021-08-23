@@ -279,7 +279,8 @@ R/mbmixture (\url{https://github.com/kbroman/mbmixture}).
 \subsection*{Data and software availability}
 
 Raw microbiome sequence reads are at
-the Sequence Read Archive, accession PRJNA744213.
+the Sequence Read Archive, accession
+\href{https://www.ncbi.nlm.nih.gov/bioproject/PRJNA744213}{PRJNA744213}.
 The GigaMUGA SNP genotypes are from \citet{keller2018} and are available at \url{https://dodb.jax.org}.
 Founder SNP genotypes are available as a
 SQLite database at Figshare,
@@ -287,7 +288,9 @@ SQLite database at Figshare,
 
 The processed data and the custom R scripts used for our
 analyses and to create the figures and tables are at GitHub,
-\url{https://github.com/kbroman/Paper_MBmixups}.
+\url{https://github.com/kbroman/Paper_MBmixups}, with additional
+intermediate data files at Figshare,
+\href{https://doi.org/10.6084/m9.figshare.16413279}{doi:10.6084/m9.figshare.16413279}.
 
 An R package, R/mbmixture, for performing the mixture analysis is
 available at the Comprehensive R Archive Network (CRAN),
