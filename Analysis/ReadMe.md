@@ -3,7 +3,11 @@
 - The primary metagenomic sequence data is at
   [the Sequence Read Archive, accession PRJNA744213](https://www.ncbi.nlm.nih.gov/bioproject/PRJNA744213)
 
-- BAM files in `/z/Proj/attie/aklobo/SortedIndexedBAM` (not publicly available)
+- Much of the intermediate data is at [Figshare,
+  doi:10.6084/m9.figshare.16413279](https://doi.org/10.6084/m9.figshare.16413279)
+
+
+- BAM files
   - We mapped the paired reads to the mouse genome
   - We mapped the unpaired reads to the mouse genome
   - We sorted and indexed the BAM files
@@ -11,8 +15,8 @@
 - `Pileups/`
   - run pileup() on each BAM file for each chromosome
   - keep just the positions that overlap one of the Collaborative Cross SNPs
-    (taken from `/z/Proj/attie/kbroman/AttieDO/DerivedData/ccfoundersnps.sqlite`,
-    available at [figshare, doi:10.6084/m9.figshare.5280229.v3](https://doi.org/10.6084/m9.figshare.5280229.v3)
+    (SQLite database available at [figshare,
+    doi:10.6084/m9.figshare.5280229.v3](https://doi.org/10.6084/m9.figshare.5280229.v3)
   - combine the paired and unpaired reads for a given sample on a
     given chromosome
 

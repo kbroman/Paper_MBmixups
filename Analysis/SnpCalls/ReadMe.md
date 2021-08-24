@@ -1,7 +1,6 @@
 ## Imputed SNP genotypes
 
-Imputed SNP genotypes in
-`z/Proj/attie/aklobo/snpCalls/imp_snp_[chr]_modified.RData`
+Imputed SNP genotypes in `imp_snp_[chr]_modified.RData`
 
 Contains `imp_snps` (500 x no. index SNPs) with NA/1/2/3 genotypes
       and `snpinfo`  (no. snps x 11) with snp information,
