@@ -33,6 +33,7 @@ library(broman)
 library(kableExtra)
 library(magrittr)
 library(lineup2)
+library(here)
 options(knitr.table.format="latex")
 @
 
@@ -847,7 +848,7 @@ $\epsilon$ is the rate of sequencing errors.
 \clearpage
 % table S2: genotype of sample vs alleles, mix-up
 <<do360_v_do360, results="asis">>=
-samp <- readRDS("Data/sample_results_allchr.rds")
+samp <- readRDS(here("Data/sample_results_allchr.rds"))
 
 caption <- paste("Read counts in microbiome sample DO-360 broken down by",
                  "observed SNP allele and by the genotype of genomic DNA sample DO-360.")
@@ -873,6 +874,8 @@ kable(tab, booktabs=TRUE, caption=caption, escape=FALSE, align="crrrr", col.name
 \clearpage
 % table S3: genotype of sample vs alleles, correct alignment
 <<do360_v_do370, results="asis">>=
+samp <- readRDS(here("Data/sample_results_allchr.rds"))
+
 caption <- paste("Read counts in microbiome sample DO-360 broken down by",
                  "observed SNP allele and by the genotype of genomic DNA sample DO-370.")
 
@@ -899,7 +902,7 @@ kable(tab, booktabs=TRUE, caption=caption, escape=FALSE, align="crrrr", col.name
 % table S4: joint genotypes of two DNA sample vs read alleles, mixed pair
 <<mixture_do344_do358, results="asis">>=
 # load data
-pairs <- readRDS("Data/pair_results_allchr.rds")
+pairs <- readRDS(here("Data/pair_results_allchr.rds"))
 
 caption <- paste("Read counts in microbiome sample DO-358 broken down by",
                  "observed SNP allele and by the genotypes of genomic DNA samples",
@@ -930,7 +933,7 @@ kable(xtab, booktabs=TRUE, caption=caption, escape=FALSE, align="ccrrrr", col.na
 % table S5: joint genotypes of two DNA sample vs read alleles, mixed pair
 <<mixture_do101_do102, results="asis">>=
 # load data
-pairs <- readRDS("Data/pair_results_allchr.rds")
+pairs <- readRDS(here("Data/pair_results_allchr.rds"))
 
 caption <- paste("Read counts in microbiome sample DO-101 broken down by",
                  "observed SNP allele and by the genotypes of genomic DNA samples",
@@ -962,6 +965,8 @@ kable(xtab, booktabs=TRUE, caption=caption, escape=FALSE, align="ccrrrr", col.na
 % table S6: joint genotypes of two DNA sample vs read alleles, mixed pair
 <<mixture_do111_do112, results="asis">>=
 # load data
+pairs <- readRDS(here("Data/pair_results_allchr.rds"))
+
 caption <- paste("Read counts in microbiome sample DO-111 broken down by",
                  "observed SNP allele and by the genotypes of genomic DNA samples",
                  "DO-111 and DO-112")
@@ -991,6 +996,8 @@ kable(xtab, booktabs=TRUE, caption=caption, escape=FALSE, align="ccrrrr", col.na
 % table S7: joint genotypes of two DNA sample vs read alleles, mixed pair
 <<mixture_do191_do146, results="asis">>=
 # load data
+pairs <- readRDS(here("Data/pair_results_allchr.rds"))
+
 caption <- paste("Read counts in microbiome sample DO-191 broken down by",
                  "observed SNP allele and by the genotypes of genomic DNA samples",
                  "DO-191 and DO-146")
