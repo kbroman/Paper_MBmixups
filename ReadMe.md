@@ -5,7 +5,8 @@
 Files for a paper (in preparation) on detecting sample mix-ups and
 mixtures in microbiome data in Diversity Outbred mice.
 
-- [`mb_mixups.Rnw`](mb_mixups.Rnw) - Make text for the manuscript
+- [`mb_mixups.Rnw`](mb_mixups.Rnw) - Main text for the manuscript
+  (LaTeX + R code, to be processed by [knitr](https://yihui.org/knitr/))
 - [`mb_mixups.bib`](mb_mixups.bib) - BibTeX file with bibliography
 - [`Analysis/`](Analysis/) - directory contain basic analyses and
   summarized results; the raw data and pipeline to get data summaries
@@ -35,6 +36,12 @@ R packages needed to compile the paper:
 - [R/broman](https://github.com/kbroman/broman)
 - [R/lineup2](https://github.com/kbroman/lineup2)
 - [R/mbmixture](https://github.com/kbroman/mbmixture)
+- [here](https://here.r-lib.org)
+- [knitr](https://yihui.org/knitr/)
+- [data.table](https://r-datatable.com/)
+- [kableExtra](http://haozhu233.github.io/kableExtra/)
+- [magrittr](https://magrittr.tidyverse.org/)
+
 
 Current PDF of the paper at <https://www.biostat.wisc.edu/~kbroman/publications/mb_mixups.pdf>
 
