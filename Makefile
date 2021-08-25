@@ -7,6 +7,7 @@ mb_mixups.pdf: LaTeX/mb_mixups.tex mb_mixups.bib \
 	cd $(<D);bibtex mb_mixups
 	cd $(<D);pdflatex mb_mixups
 	cd $(<D);pdflatex mb_mixups
+	cd $(<D);pdflatex mb_mixups
 	mv $(<D)/$(@F) $@
 
 LaTeX/mb_mixups.tex: mb_mixups.Rnw R/single_results.rds R/mixture_results.rds Data/readMapping_mouseGenome_all_uncorrectedNames.tsv
