@@ -57,7 +57,7 @@ in microbiome data in Diversity Outbred mice}
 
 Departments of $^{*}$Biostatistics and Medical Informatics,
 $^{\dagger}$Bacteriology, and $^{\ddagger}$Biochemistry,
-University of Wisconsin--Madison, Madison, Wisconsin 53706
+University of Wisconsin--Madison, Madison, Wisconsin 53706 USA
 
 \end{center}
 
@@ -275,28 +275,6 @@ contaminant and the others.
 Calculations were performed in R \citep{RCore}, with the R package
 R/mbmixture (\url{https://github.com/kbroman/mbmixture}).
 
-
-
-\subsection*{Data and software availability}
-
-Raw microbiome sequence reads are at
-the Sequence Read Archive, accession
-\href{https://www.ncbi.nlm.nih.gov/bioproject/PRJNA744213}{PRJNA744213}.
-The GigaMUGA SNP genotypes are from \citet{keller2018} and are available at \url{https://dodb.jax.org}.
-Founder SNP genotypes are available as a
-SQLite database at Figshare,
-\href{https://doi.org/10.6084/m9.figshare.5280229.v3}{doi:10.6084/m9.figshare.5280229.v3}.
-
-The processed data and the custom R scripts used for our
-analyses and to create the figures and tables are at GitHub,
-\url{https://github.com/kbroman/Paper_MBmixups}, with additional
-intermediate data files at Figshare,
-\href{https://doi.org/10.6084/m9.figshare.16413279}{doi:10.6084/m9.figshare.16413279}.
-
-An R package, R/mbmixture, for performing the mixture analysis is
-available at the Comprehensive R Archive Network (CRAN),
-\url{https://cran.r-project.org/package=mbmixture},
-and on Github, \url{https://github.com/kbroman/mbmixture}.
 
 
 
@@ -779,6 +757,32 @@ swamped by other sources of variation.
 
 
 \clearpage
+
+\section*{Data and software availability}
+
+Raw microbiome sequence reads are at
+the Sequence Read Archive, accession
+PRJNA744213,
+\url{https://www.ncbi.nlm.nih.gov/bioproject/PRJNA744213}.
+The GigaMUGA SNP genotypes are from \citet{keller2018} and are available at \url{https://dodb.jax.org}.
+Founder SNP genotypes are available as a
+SQLite database at Figshare,
+\url{https://doi.org/10.6084/m9.figshare.5280229.v3}.
+
+The processed data and the custom R scripts used for our
+analyses and to create the figures and tables are at GitHub,
+\url{https://github.com/kbroman/Paper_MBmixups}, with additional
+intermediate data files at Figshare,
+\url{https://doi.org/10.6084/m9.figshare.16413279}.
+
+An R package, R/mbmixture, for performing the mixture analysis is
+available at the Comprehensive R Archive Network (CRAN),
+\url{https://cran.r-project.org/package=mbmixture},
+and on Github, \url{https://github.com/kbroman/mbmixture}.
+
+Supplemental Material available at figshare: \url{https://doi.org/10.25387/g3.16455282}.
+
+
 \section*{Acknowledgments}
 
 The authors thank the University of Wisconsin Biotechnology Center DNA
@@ -788,10 +792,18 @@ Computing in the Department of Computer Sciences for providing
 computational resources and support.
 Amelie Baud and an anonymous reviewer provided valuable comments for
 improvement of the manuscript.
+
+\section*{Funding}
+
 This work was supported in part by National Institutes of Health
 grants R01GM070683 (to K.W.B.), R01DK101573 (to A.D.A.), and
 R01DK108259 (to F.E.R.), and Postdoctoral Fellowship T15LM007359 (to
 L.L.T.).
+
+
+\section*{Competing Interests}
+
+The authors declare no competing interests.
 
 
 \clearpage
