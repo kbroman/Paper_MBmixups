@@ -2,8 +2,17 @@
 
 [![DOI](https://zenodo.org/badge/161683290.svg)](https://zenodo.org/badge/latestdoi/161683290)
 
-Files for a paper (in preparation) on detecting sample mix-ups and
-mixtures in microbiome data in Diversity Outbred mice.
+This repository contains the source for the paper
+
+> Lobo AK, Traeger LL, Keller MP, Attie AD, Rey FE, Broman KW (2021)
+> Identification of sample mix-ups and mixtures in microbiome data in
+> Diversity Outbred mice. [G3
+> (Bethesda)](https://academic.oup.com/g3journal), to appear
+> [![pdf](https://kbroman.org/icons16/pdf-icon.png)](https://academic.oup.com/g3journal/advance-article-pdf/doi/10.1093/g3journal/jkab308/40259169/jkab308.pdf)
+> [![GitHub](https://kbroman.org/icons16/github-icon.png)](https://github.com/kbroman/Paper_MBmixups)
+> [![R/mbmixture software](https://kbroman.org/icons16/R-icon.png)](https://github.com/kbroman/mbmixture)
+> [![doi](https://kbroman.org/icons16/doi-icon.png)](https://doi.org/10.1093/g3journal/jkab308)
+
 
 - [`mb_mixups.Rnw`](mb_mixups.Rnw) - Main text for the manuscript
   (LaTeX + R code, to be processed by [knitr](https://yihui.org/knitr/))
