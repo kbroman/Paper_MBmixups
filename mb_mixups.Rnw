@@ -306,7 +306,7 @@ chromosomes, and the absolute counts had a median of
 with \Sexpr{round(mean(mouse_reads >= 1e6)*100)}\% of samples having
 $>$ 1 million reads mapping to the mouse genome,
 and just \Sexpr{sum(mouse_reads <= 1e5)} samples having $<$ 100,000
-reads mapping to the mosue genome.
+reads mapping to the mouse genome.
 
 <<calc_geno_stats>>=
 summary_file <- "Data/geno_imp_summary.rds"
