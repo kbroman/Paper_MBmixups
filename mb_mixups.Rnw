@@ -731,7 +731,7 @@ and sufficient metagenomic reads that are derived from the host.
 
 Our approach to identify mix-ups was simplistic: simply counting
 discrepant reads at homozygous SNPs, pooled across all SNPs. One might
-instead seek to sufficient metagenomic reads at individual SNPs in
+instead seek to identify sufficient metagenomic reads at individual SNPs in
 order to determine SNP genotypes, but our approach is more expedient.
 Another alternative would be to perform QTL mapping with
 microbiome-derived phenotypes and identify sample mix-ups using an
@@ -780,7 +780,7 @@ available at the Comprehensive R Archive Network (CRAN),
 \url{https://cran.r-project.org/package=mbmixture},
 and on Github, \url{https://github.com/kbroman/mbmixture}.
 
-Supplemental Material available at figshare: \url{https://doi.org/10.25387/g3.16455282}.
+Supplementary Tables and Figures are available at Figshare: \url{https://doi.org/10.25387/g3.16455282}.
 
 
 \section*{Acknowledgments}
