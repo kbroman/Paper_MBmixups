@@ -7,7 +7,8 @@ This repository contains the source for the paper
 > Lobo AK, Traeger LL, Keller MP, Attie AD, Rey FE, Broman KW (2021)
 > Identification of sample mix-ups and mixtures in microbiome data in
 > Diversity Outbred mice. [G3
-> (Bethesda)](https://academic.oup.com/g3journal), to appear
+> (Bethesda)](https://academic.oup.com/g3journal) 11:jkab308
+> [![PubMed](https://kbroman.org/icons16/pubmed-icon.png)](https://pubmed.ncbi.nlm.nih.gov/34499168/)
 > [![pdf](https://kbroman.org/icons16/pdf-icon.png)](https://academic.oup.com/g3journal/advance-article-pdf/doi/10.1093/g3journal/jkab308/40259169/jkab308.pdf)
 > [![GitHub](https://kbroman.org/icons16/github-icon.png)](https://github.com/kbroman/Paper_MBmixups)
 > [![R/mbmixture software](https://kbroman.org/icons16/R-icon.png)](https://github.com/kbroman/mbmixture)
@@ -50,11 +51,6 @@ R packages needed to compile the paper:
 - [data.table](https://r-datatable.com/)
 - [kableExtra](http://haozhu233.github.io/kableExtra/)
 - [magrittr](https://magrittr.tidyverse.org/)
-
-
-Current PDF of the paper at <https://www.biostat.wisc.edu/~kbroman/publications/mb_mixups.pdf>
-
-It's also on [bioRxiv](https://www.biorxiv.org): <https://doi.org/10.1101/529040>
 
 
 ### Additional data
